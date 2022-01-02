@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Endless Scroll</title>
+ <style>
+
+   .post
+   {
+    padding: 20px;
+    margin-bottom: 10px;
+   }
+
+   body 
+   {
+       padding-bottom: 50px;
+   }
+ </style>    
+
+ <script>
+     let counter=1;
+
+     const quantity=20;
+
+     document.addEventListener("DOMContentLoaded",load);
+
+
+     window.onscroll=()=>
+     {
+         console.log("scroll...");
+         if(window.innerHeight + window.scrollY>=document.body.offsetHeight)
+         {
+            console.log("load...");
+             load();
+         }
+     }
+
+     function load()
+     {
+         const start=counter;
+         const end=start + quantity -1;
+         counter=end+1;
+
+
+        
+        //const url = `https://postapifth.azurewebsites.net/api/Posts/${start}/${end}`;
+        const url=`https://localhost:44301/api/Posts/${start}/${end}`;
+        
+        var headers = {}
+        
+        fetch(url, {
+            method : "GET",
+            mode: 'cors',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            headers: headers
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(response.error)
+            }
+            return response.json();
+        })
+        .then(data => {
+                console.log(data.posts.toString());
+                for(var i in data.posts)
+                {
+                    var postData=data.posts[i];
+                    console.log(postData);
+                    add_post(postData);
+                }
+              })
+        .catch(function(error) {
+            document.querySelector("#posts").innerHTML = error;
+        });
+    }
+
+     function add_post(contents)
+     {
+         const post=document.createElement("div");
+         post.className="post";
+         post.innerHTML= `${contents} <button class="hide">Hide</button>`;
+
+         document.querySelector("#posts").append(post);
+     }
+
+
+ </script>
+   
+
+</head>
+<body>
+
+ <div id="posts">
+
+ </div>
+ 
+</body>
+</html>
